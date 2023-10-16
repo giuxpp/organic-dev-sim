@@ -1,2 +1,2 @@
 all:
-	g++ organic.cpp -o organic.out
+	g++ organic.cpp -o organic.out -lGL -lGLU -lglut
