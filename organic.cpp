@@ -5,6 +5,7 @@
 #include <GL/glut.h>
 #include <cstdlib> //for random()
 #include <cmath>
+#include "tree.h"
 
 using namespace std;
 
@@ -28,58 +29,54 @@ GLfloat randomFloat() {
   return (GLfloat)rand() / (RAND_MAX/2);
 }
 
-void drawLine(float x0, float y0, float x1, float y1, gxp_color _color) {
-    //glClear(GL_COLOR_BUFFER_BIT);  
-    glColor3f(_color.red, _color.green, _color.blue); 
-    glLineWidth(1);  
-
+void drawLine(float x0, float y0, float x1, float y1, gxp_color _color, uint8_t _line_width) {   
+    //glLineWidth(_line_width); 
     glBegin(GL_LINES);
+      glColor3f(_color.red, _color.green, _color.blue);
       glVertex2d(x0, y0);
       glVertex2d(x1, y1);
     glEnd();
 }
 
 
-void drawTree(GLfloat _x, GLfloat _y, GLfloat _branch_len, GLfloat _len_fac, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, int _n){
+void drawTree(GLfloat _x, GLfloat _y, GLfloat _branch_len, GLfloat _len_fac, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n){
     
     GLfloat branch_len = _branch_len;
-    GLfloat x0=_x, x1, y0=_y, y1;    
-    GLfloat angle = _newAngle;
-    GLfloat new_angle_right  = angle - 2*_angle0;// - angle/2;
-    GLfloat new_angle_left   = angle + _angle0;// - angle/2;
+    GLfloat x0=_x, x1r, x1l, y0=_y, y1r, y1l;    
+    GLfloat angle = _angle_factor*_newAngle;
+    GLfloat new_angle_right  = angle - _angle0*_angle_factor;
+    GLfloat new_angle_left   = angle + _angle0*_angle_factor;
     GLfloat new_angle = _angle_factor * angle;
     GLfloat lenFactor = _len_fac;   
-    int n=_n;
+    uint8_t n = _n;
+    uint8_t level = 0;
+
+    static uint8_t tickness = (level++)<4?2*(4-level):1;
     
     if (n--)
 {
-        /**  Left Branch */
-        x1=x0-sin(angle)*branch_len;
-        y1=y0+cos(angle)*branch_len;   
-       
-        drawLine(x0,y0,x1,y1,COLOR_WHITE);        
-        drawTree(x1, y1, lenFactor*branch_len, lenFactor, _angle0, _angle_factor, new_angle_left, n);
-
         /* Right Branch */
-        x1=x0-sin(angle)*branch_len;
-        y1=y0+cos(angle)*branch_len;   
-       
-        drawLine(x0,y0,x1,y1,COLOR_WHITE);        
-        drawTree(x1, y1, lenFactor*branch_len, lenFactor, _angle0, _angle_factor, new_angle_right, n);
+        x1r=x0-sin(angle)*branch_len;
+        y1r=y0+cos(angle)*branch_len;   
+        drawLine(x0,y0,x1r,y1r,COLOR_WHITE, tickness);  
+
+        /*  Left Branch */
+        x1l=x0-sin(angle)*branch_len;
+        y1l=y0+cos(angle)*branch_len;                 
+        drawLine(x0,y0,x1l,y1l,COLOR_WHITE, tickness);        
+
+        /* Recursive calling of this function */
+        drawTree(x1l, y1l, lenFactor*branch_len, lenFactor, _angle0, _angle_factor, new_angle_left, n);
+        drawTree(x1r, y1r, lenFactor*branch_len, lenFactor, _angle0, _angle_factor, new_angle_right, n);
     }
 }
 
-
+figureClass tree(0.5, 0.75, 1.0*pi/12, 1.50, 0.0, 6);
 void renderScene(){
     glClear(GL_COLOR_BUFFER_BIT);
-    glLineWidth(1.5);  
-    // glBegin (GL_LINES);
-    //   glVertex2f(0.0, -0.34);
-    //   glVertex2f(0.0,0.0);
-    // glEnd();
-
-    /*       x0,     y0,     lenght,   len_factor,   angle init,    angle_factor,  new_angle    iterations*/
-    drawTree(0.0,    0.0,     0.24,      0.7,        (1*pi/12),       1.0,        (1*pi/12),       8);
+ 
+    /*        x0  ,     y0,         lenght,         len_factor,     angle init,     angle_factor,         new_angle        iterations*/
+    drawTree(0.0f,    -0.8f,    tree.branch_len,   tree.len_fac,    tree.angle,   tree.angle_factor,   tree.angle_trunk,  tree.nlevels);
  
     glutSwapBuffers();    
 }
@@ -99,7 +96,7 @@ void display() {
 }
 
 int main(int argc, char** argv){
-    cout<<endl<<"!Hi there"<<endl;
+   // test();
     
     glutInit(&argc, argv);
     glutInitWindowSize(window_width, window_height);    
