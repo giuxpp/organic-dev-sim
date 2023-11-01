@@ -1,10 +1,11 @@
-/***** INCLUDES Section *****/
+/**********************************
+ *******  INCLUDE Section  ********
+ ***********************************/
 #include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>  // for glutMainLoopEvent()
-#include <cstdlib> //for random()
 #include <cmath>
 #include "bioform.h"
 
@@ -14,23 +15,16 @@ using namespace std;
 #define window_height             1500
 
 void initGlutRoutine(int argc, char** argv);
+void display (void);
 
 
-// Return a random float in the range 0.0 to 1.0.                            
-GLfloat randomFloat() {
-  return (GLfloat)rand() / (RAND_MAX/2);
-}
- /*           trunkLen  firstB  bLenFact     angle    angFactor, angleTrunk,  levels) */
-bioformClass tree(0.2,    0.1,    1.12,    1.30*pi/12,    -0.7,     pi/2,        6);
-
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT); 
-        drawBioForm(0.0f,    -(tree.trunkLen),  tree.trunkLen,  tree.firstBranchLen,   tree.branchLenFact,    tree.angleBranches,   tree.angleFactor,   tree.angleTrunk,  tree.levels); 
-        glutSwapBuffers();    
-    glFlush(); 
-}
+/**           trunkLen  firstB  bLenFact     angle      angFact   angleTrunk   levels) */
+bioformClass tree(0.2,    0.1,    1.12,    1.30*pi/12,    -0.7,      pi/2,       6);
 
 
+/*******       main()    ***************
+ *       Program starts here.     
+ ***************************************/
 int main(int argc, char** argv){
        
     initGlutRoutine(argc, argv);
@@ -45,12 +39,29 @@ int main(int argc, char** argv){
          *  It will call as necessary any callbacks that have been registered   */
         glutMainLoopEvent();
         
-        //cout<<"Imprimiendo desde el main after events"<<endl;
     }    
     
     return 0;
 }
 
+
+/*******     display()   ***************
+ *   This callback is exectued from GL
+ *   Execute the display routine 
+ ***************************************/
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT); 
+        drawBioForm(0.0f,    -(tree.trunkLen),  tree.trunkLen,  tree.firstBranchLen,   tree.branchLenFact,    tree.angleBranches,   tree.angleFactor,   tree.angleTrunk,  tree.levels); 
+        glutSwapBuffers();    
+    glFlush(); 
+}
+
+
+/****    initGlutRoutine()   ****************
+ *   Configuration and initialization of GL library
+ *   The nex parameters are configured:
+ *      Window size, position, scale, title, 
+ ********************************************/
 void initGlutRoutine(int argc, char** argv){
     glutInit(&argc, argv);
     glMatrixMode(GL_MODELVIEW);  //original: GL_PROJECTION

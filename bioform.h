@@ -1,3 +1,6 @@
+/**********************************
+ *******  INCLUDE Section  ********
+ ***********************************/
 #include <GL/gl.h>
 #include <iostream>
 
@@ -6,6 +9,9 @@ extern const float pi;
 #define RAD2GRADE(xrad)    (360*xrad/(2*pi))
 
 
+/**************************************
+ *******  Main BIOFORM Class   ********
+ **************************************/
 class bioformClass {
     private:
 
@@ -31,16 +37,20 @@ class bioformClass {
 };
 
 
+/** This function will be share with including modules for drawing a Bioform from a "gene pool" */
 void drawBioForm(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranchLen, GLfloat _branchLenFact, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n);
 
 
-/*#########   SOME INSTERESTING FIGURES ############
-  # - Androide Tribal
-  # bioformClass tree(0.1, 1.1, 2.25*pi/12, -1.1, 0, 5)
+
+/*############################################################*/
+/*#############   SOME INSTERESTING FIGURES 3#################
+  # 1) Androide Tribal 
+  #    bioformClass tree(0.1, 1.1, 2.25*pi/12, -1.1, 0, 5)
   # 
   # 
   # 
   # 
   # 
   # 
-  ##################################################*/
+  ###########################################################
+  ###########################################################*/
