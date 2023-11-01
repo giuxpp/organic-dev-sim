@@ -1,2 +1,2 @@
 all:
-	g++ organic.cpp tree.cpp -o organic.out -lGL -lGLU -lglut
+	g++ organic.cpp bioform.cpp -o organic.out -lGL -lGLU -lglut 
