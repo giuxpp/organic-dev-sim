@@ -10,21 +10,22 @@
 
 using namespace std;
 
-#define window_width              1200
-#define window_height             1600
+#define window_width              1500
+#define window_height             1500
 
 void initGlutRoutine(int argc, char** argv);
 
 
-// Return a random float in the range 0.0 to 1.0.                            */
+// Return a random float in the range 0.0 to 1.0.                            
 GLfloat randomFloat() {
   return (GLfloat)rand() / (RAND_MAX/2);
 }
+ /*           trunkLen  firstB  bLenFact     angle    angFactor, angleTrunk,  levels) */
+bioformClass tree(0.2,    0.1,    1.12,    1.30*pi/12,    -0.7,     pi/2,        6);
 
-bioformClass tree(0.5, 0.78, 1.0*pi/12, 1.50, 0.0, 6);
 void display() {
     glClear(GL_COLOR_BUFFER_BIT); 
-        drawBioForm(0.0f,    -0.8f,    tree.branch_len,   tree.len_fac,    tree.angle,   tree.angle_factor,   tree.angle_trunk,  tree.nlevels); 
+        drawBioForm(0.0f,    -(tree.trunkLen),  tree.trunkLen,  tree.firstBranchLen,   tree.branchLenFact,    tree.angleBranches,   tree.angleFactor,   tree.angleTrunk,  tree.levels); 
         glutSwapBuffers();    
     glFlush(); 
 }

@@ -8,29 +8,39 @@ extern const float pi;
 
 class bioformClass {
     private:
-        GLfloat angle_main;
-    
+
+
     public:
-        GLfloat branch_len; 
-        GLfloat len_fac; 
-        GLfloat angle; 
-        GLfloat angle_factor; 
-        GLfloat angle_trunk;
-        uint8_t nlevels;
+        GLfloat trunkLen;        // Trunk Lenght (lenght of first unique branch) 
+        GLfloat firstBranchLen;  // First real branches Lenght
+        GLfloat branchLenFact;   // Branches lenght factor (increse/decrease branches lenght)
+        GLfloat angleBranches;   // Angle for the branches
+        GLfloat angleFactor;     // Angle factor: Increse/decrease the branches angle
+        GLfloat angleTrunk;      // Angle of the trunk
+        uint8_t levels;
 
-        bioformClass(GLfloat _branch_len, GLfloat _len_fac, GLfloat _angle, GLfloat _angle_factor, GLfloat _angle_trunk, uint8_t _nlevels){
-            branch_len=_branch_len; 
-            len_fac=_len_fac; 
-            angle=_angle; 
-            angle_factor=_angle_factor; 
-            angle_trunk = _angle_trunk;
-            nlevels = _nlevels;
+        bioformClass(GLfloat _trunkLen, GLfloat _firstBranchLen, GLfloat _branchLenFact, GLfloat _angle, GLfloat _angle_factor, GLfloat _angle_trunk, uint8_t _nlevels){
+            trunkLen       = _trunkLen;
+            firstBranchLen = _firstBranchLen; 
+            branchLenFact  = _branchLenFact; 
+            angleBranches  = _angle; 
+            angleFactor    = _angle_factor; 
+            angleTrunk     = _angle_trunk;
+            levels         = _nlevels;
         }  
-
-        GLfloat get_angle_main(){
-            return angle_main;
-        }
 };
 
 
-void drawBioForm(GLfloat _x, GLfloat _y, GLfloat _branch_len, GLfloat _len_fac, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n);
+void drawBioForm(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranchLen, GLfloat _branchLenFact, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n);
+
+
+/*#########   SOME INSTERESTING FIGURES ############
+  # - Androide Tribal
+  # bioformClass tree(0.1, 1.1, 2.25*pi/12, -1.1, 0, 5)
+  # 
+  # 
+  # 
+  # 
+  # 
+  # 
+  ##################################################*/
