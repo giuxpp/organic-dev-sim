@@ -1,3 +1,6 @@
+/**********************************
+ *******  INCLUDE Section  ********
+ ***********************************/
 #include "bioform.h"
 #include <iostream>
 #include <GL/gl.h>
@@ -75,4 +78,29 @@ void drawBioForm(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranch
         drawBioForm(x1l, y1l, _trunkLen, _branchLenFact*_firstBranchLen, _branchLenFact, _angle0, _angle_factor, new_angle_left, _n-1);
         drawBioForm(x1r, y1r, _trunkLen, _branchLenFact*_firstBranchLen, _branchLenFact, _angle0, _angle_factor, new_angle_right, _n-1);
     }
+}
+
+int getMutation(){
+    int n, res=0;
+    
+    srand(time(0));//seed the rand function
+
+    for (int i=1; i<=20; i++){
+        if (i>15){
+            n=i+11;
+        }
+        else if (i>10){
+            n=i+7;
+        }else if (i>5){
+            n=i+3;
+        } else {
+            n=i+2;
+        }
+
+        if (rand()%n) {
+            res = i;
+        }
+    }
+
+    return res;
 }

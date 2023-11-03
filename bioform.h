@@ -45,7 +45,7 @@ void drawBioForm(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranch
 /*############################################################*/
 /*#############   SOME INSTERESTING FIGURES 3#################
   # 1) Androide Tribal 
-  #    bioformClass tree(0.1, 1.1, 2.25*pi/12, -1.1, 0, 5)
+  #    bioformClass tree(0.3, 0.1, 1.1, 2.25*pi/12, -1.1, 0, 5)
   # 
   # 
   # 
