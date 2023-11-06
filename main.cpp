@@ -2,7 +2,7 @@
  *******  INCLUDE Section  ********
  ***********************************/
 #include <iostream>
-//#include "bioform.h"
+#include "bioform.h"
 #include "glutInterface.h"
 
 
@@ -14,6 +14,8 @@ using namespace std;
 
 
 /************   BIOFORM   OBJECTS     ************************/
+/**           trunkLen  firstB  bLenFact     angle      angFact   angleTrunk   levels) */
+
 
 
 /*******       main()    ***************
@@ -22,7 +24,8 @@ using namespace std;
 int main(int argc, char** argv){
        
     initGlutRoutine(argc, argv);
-    
+    startNodes();
+    srand(time(0));//seed the rand function. Timer changes every second.  time(0)
         
     while (1){
         /**     glutMainLoop()  
@@ -30,7 +33,6 @@ int main(int argc, char** argv){
          *  once in a GLUT program.  Once called, this routine will never return. 
          *  It will call as necessary any callbacks that have been registered   */        
         EnterGlutLoop();
-        
     }    
     
     return 0;

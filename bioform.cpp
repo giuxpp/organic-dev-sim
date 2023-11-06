@@ -3,104 +3,90 @@
  ***********************************/
 #include "bioform.h"
 #include <iostream>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-#include <GL/freeglut.h>  // for glutMainLoopEvent()
-#include <cstdlib> //for random()
-#include <cmath>
+#include <stdlib.h>
 
 
-
-const float pi = 3.14159265;
-
-/** Color in RGB. From 0.0 to 1.0 */
-typedef struct {
-    float red;
-    float green;
-    float blue;
-}gxp_color;
-
-#define COLOR_WHITE       {1.0f, 1.0f, 1.0f} 
+using namespace std;
 
 
-/*******************   drawLine ()    ************************
- *   draws a line from p0 to p1
- *   Used locally by drqwBioForm function *
+/******************   getMutationSteps ()    **********************
+ *   This function returns the number of steps to be added or 
+ *   substracted from a gene.
+ *   The algorithm generates an int from -20 to +20, being the 
+ *   smaller number more probable and the highest less.
  *************************************************************/
-static void drawLine(float x0, float y0, float x1, float y1, gxp_color _color, uint8_t _line_width) {   
-    glLineWidth(_line_width); 
-    glBegin(GL_LINES);
-      glColor3f(_color.red, _color.green, _color.blue);
-      glVertex2d(x0, y0);
-      glVertex2d(x1, y1);
-    glEnd();
-}
-
-
-/******************   drawBioForm ()    **********************
- *   Draws a bio form based on the "genes" input parameters
- *   This function is shared with upper app layers.
- *************************************************************/
-void drawBioForm(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranchLen, GLfloat _branchLenFact, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n){
+int getMutationSteps(){
+    int n, res=0;//, i=20;        
     
-    static bool firstBranch = true;
-    GLfloat firstBranchLen = _firstBranchLen;
-    GLfloat x0=_x, y0=_y, x1r, x1l, y1r, y1l;    
-    GLfloat angleBranches = _angle_factor*_newAngle;    
-    uint8_t lineGrossor = 2;        
-    
-    /* Setting lines Grossor and Trunk Lenght */
-    if (firstBranch){
-        firstBranch = false;
-        firstBranchLen = _trunkLen;
-        lineGrossor = 3;
-    } else if (_n==1){
-        lineGrossor = 1;
-    } else {/*no action, keep initial value*/}
-
-    /* Draw branches if deep levels allows it */
-    if (_n)
-    {
-        /* Right Branch */
-        GLfloat new_angle_right  = angleBranches - _angle0*_angle_factor;
-        x1r=x0-sin(angleBranches)*firstBranchLen;
-        y1r=y0+cos(angleBranches)*firstBranchLen;   
-        drawLine(x0,y0,x1r,y1r,COLOR_WHITE, lineGrossor);  
-
-        /*  Left Branch */
-        GLfloat new_angle_left   = angleBranches + _angle0*_angle_factor;
-        x1l=x0-sin(angleBranches)*firstBranchLen;
-        y1l=y0+cos(angleBranches)*firstBranchLen;                 
-        drawLine(x0,y0,x1l,y1l,COLOR_WHITE, lineGrossor);        
-
-        /* Recursive calling of this function */
-        drawBioForm(x1l, y1l, _trunkLen, _branchLenFact*_firstBranchLen, _branchLenFact, _angle0, _angle_factor, new_angle_left, _n-1);
-        drawBioForm(x1r, y1r, _trunkLen, _branchLenFact*_firstBranchLen, _branchLenFact, _angle0, _angle_factor, new_angle_right, _n-1);
-    }
-}
-
-int getMutation(){
-    int n, res=0;
-    
-    srand(time(0));//seed the rand function
-
-    for (int i=1; i<=20; i++){
-        if (i>15){
-            n=i+11;
-        }
-        else if (i>10){
-            n=i+7;
-        }else if (i>5){
-            n=i+3;
-        } else {
-            n=i+2;
-        }
-
-        if (rand()%n) {
+    for (int i=1; i<5; i++){
+        if (rand()%(i+1)==0) {
             res = i;
-        }
+            if (0==rand()%2){
+                res = -res;
+            }
+            return res;
+        }        
     }
-
     return res;
+}
+
+void MutationLevelsParam(uint8_t * genePtr){
+    uint8_t res=0;
+
+    cout << "Muting param: " << gene_Levels.name << endl;
+    cout << "Old value = " << (uint8_t)*genePtr <<endl;
+
+    if (rand()%20==0) {
+        res = 1;
+    }
+    if ((rand()%40==0) && (*genePtr>1)){
+        res -= 1;
+    }
+    if (*genePtr<gene_Levels.max) {
+        *genePtr += res;
+    }
+        
+    cout << "New value = " << *genePtr <<endl<<endl;
+}
+
+void mutateGen(GLfloat * genePtr, geneParams * geneParamPtr)
+{
+    GLfloat newVal = *genePtr + getMutationSteps()*geneParamPtr->step;
+    cout << "Muting param: " << geneParamPtr->name << endl;
+    cout << "Old value = " << *genePtr <<endl;
+    
+    /* Evaluate new gene */
+    if ((newVal<geneParamPtr->max) && (newVal>geneParamPtr->min))
+    {
+        *genePtr = newVal;
+    }
+    else{
+        /*  TODO:
+         *  This object must die */
+    }
+    
+    cout << "New value = " << *genePtr <<endl<<endl;
+}
+
+
+void bioformMutation (bioformClass * bioform){
+    cout << endl << "****************"<<endl<<"Starting mutation..."<<endl;
+    mutateGen(&bioform->trunkLen,      &gene_trunkLen);  //cout<<"Gene trunkLen"<<endl;
+    mutateGen(&bioform->branchLen,     &gene_branchLen);  //cout<<"Gene branchLen"<<endl;
+    mutateGen(&bioform->branchLenFact, &gene_branchLenFact); // cout<<"Gene branchLenFact"<<endl;
+    //mutateGen(&bioform->angleTrunk,    &gene_angleTrunk);  //cout<<"Gene angleTrunk"<<endl;
+    mutateGen(&bioform->angleBranches, &gene_angleBranches); // cout<<"Gene angleBranches"<<endl;
+    mutateGen(&bioform->angleFactor,   &gene_angleFactor);  //cout<<"Gene angleFactor"<<endl;
+    MutationLevelsParam(&bioform->levels); // cout<<"Gene Levels"<<endl;
+}
+
+void bioFormClone (bioformClass * src, bioformClass * dest)
+{
+    dest->trunkLen = src->trunkLen;
+    dest->branchLen = src->branchLen;
+    dest->branchLenFact = src->branchLenFact;
+    dest->angleTrunk = src->angleTrunk;
+    dest->angleBranches = src->angleBranches;
+    dest->angleFactor = src->angleFactor;
+    dest->levels = src->levels;
 }

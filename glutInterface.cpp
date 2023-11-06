@@ -13,33 +13,52 @@
  **********************************/ 
 using namespace std;
 
-#define window_width              1500
-#define window_height             1500
-#define disp_x_range_min          (-1.0)
-#define disp_x_range_max          ( 1.0)
-#define disp_y_range_min          (-1.0)
-#define disp_y_range_max          ( 1.0)
+#define Pi (3.14158)
 
-/** Color in RGB. From 0.0 to 1.0 */
-typedef struct {
-    float red;
-    float green;
-    float blue;
-}gxp_color;
 
-#define COLOR_WHITE       {1.0f, 1.0f, 1.0f}
 
 
 /*************************************
- ****  LOCAL FUNCTION PROTOTYPES  ****
+ ******   LOCAL DECLARATIONS   *******
  *************************************/ 
+void drawBioFormWrapper(bioformClass bioform, point pnt);
 void drawBioForms(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranchLen, GLfloat _branchLenFact, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n);
 
+typedef struct node{
+    bioformClass * bioformPointer;
+    node * prev;
+}nodeType;
+
+nodeType * treePointer;
 
 /************   BIOFORM   OBJECTS     ************************/
-/**           trunkLen  firstB  bLenFact     angle      angFact   angleTrunk   levels) */
-bioformClass tree(0.0,    0.005,     2,    1.85*pi/12,    1.2,      0,            5);
+/**                    trunkLen     firstB     bLenFact      angleTrunk    angleBranches   angFact     levels) */
+bioformClass formObject(  0.01f,       0.01f,      1.0f,          0.0f,      3*Pi/12,        1.0f,           3   );
 
+void startNodes (void){
+   treePointer = new node();
+   treePointer->bioformPointer = &formObject;
+   treePointer->prev = nullptr; 
+}
+
+void AddNode (void)
+{ 
+    node *newNode = new node();
+    bioformClass * newBioform = new bioformClass();
+    bioFormClone(treePointer->bioformPointer, newBioform);
+    bioformMutation(newBioform);
+    newNode->bioformPointer = newBioform;
+    newNode->prev = treePointer;
+    treePointer = newNode;
+}
+
+void FreeNode (void) {
+    node * temp = treePointer;
+    if (treePointer->prev != nullptr){
+        treePointer = treePointer->prev;
+        free(temp);
+    }
+}
 
 /*******************   drawLine ()    ************************
  *   draws a line from p0 to p1
@@ -54,6 +73,18 @@ static void drawLine(float x0, float y0, float x1, float y1, gxp_color _color, u
     glEnd();
 }
 
+/***************   drawBioFormWrapper    ********************
+ *   Wrapper fro drawBioForms function
+ *   Ths functions receives a bioform object and starts
+ *   to draw its generated figure.
+ ******************************0.05f ******************************/
+void drawBioFormWrapper(bioformClass bioform, point pnt){
+    drawBioForms(pnt.x, pnt.y, 
+                bioform.trunkLen, bioform.branchLen, bioform.branchLenFact,    
+                bioform.angleBranches, bioform.angleFactor, bioform.angleTrunk,  
+                bioform.levels); 
+}
+
 
 /******************   drawBioForms ()    **********************
  *   Draws a bio form based on the "genes" input parameters
@@ -62,7 +93,7 @@ static void drawLine(float x0, float y0, float x1, float y1, gxp_color _color, u
 void drawBioForms(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranchLen, GLfloat _branchLenFact, GLfloat _angle0, GLfloat _angle_factor, GLfloat _newAngle, uint8_t _n){
     
     static bool firstBranch = true;
-    GLfloat firstBranchLen = _firstBranchLen;
+    GLfloat branchLen = _firstBranchLen;
     GLfloat x0=_x, y0=_y, x1r, x1l, y1r, y1l;    
     GLfloat angleBranches = _angle_factor*_newAngle;    
     uint8_t lineGrossor = 2;        
@@ -70,7 +101,7 @@ void drawBioForms(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranc
     /* Setting lines Grossor and Trunk Lenght */
     if (firstBranch){
         firstBranch = false;
-        firstBranchLen = _trunkLen;
+        branchLen = _trunkLen;
         lineGrossor = 3;
     } else if (_n==1){
         lineGrossor = 1;
@@ -81,14 +112,14 @@ void drawBioForms(GLfloat _x, GLfloat _y, GLfloat _trunkLen, GLfloat _firstBranc
     {
         /* Right Branch */
         GLfloat new_angle_right  = angleBranches - _angle0*_angle_factor;
-        x1r=x0-sin(angleBranches)*firstBranchLen;
-        y1r=y0+cos(angleBranches)*firstBranchLen;   
+        x1r=x0-sin(angleBranches)*branchLen;
+        y1r=y0+cos(angleBranches)*branchLen;   
         drawLine(x0,y0,x1r,y1r,COLOR_WHITE, lineGrossor);  
 
         /*  Left Branch */
         GLfloat new_angle_left   = angleBranches + _angle0*_angle_factor;
-        x1l=x0-sin(angleBranches)*firstBranchLen;
-        y1l=y0+cos(angleBranches)*firstBranchLen;                 
+        x1l=x0-sin(angleBranches)*branchLen;
+        y1l=y0+cos(angleBranches)*branchLen;                 
         drawLine(x0,y0,x1l,y1l,COLOR_WHITE, lineGrossor);        
 
         /* Recursive calling of this function */
@@ -112,11 +143,48 @@ void EnterGlutLoop(void){
  *   This callback is exectued from GL
  *   Execute the display routine 
  ***************************************/
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT); 
-        drawBioForms(0.0f,    -(tree.trunkLen),  tree.trunkLen,  tree.firstBranchLen,   tree.branchLenFact,    tree.angleBranches,   tree.angleFactor,   tree.angleTrunk,  tree.levels); 
+void display(void) {
+    glClear(GL_COLOR_BUFFER_BIT);         
+        drawBioFormWrapper(formObject, {0.0f,-0.3f});
         glutSwapBuffers();    
     glFlush(); 
+}
+
+// Handles the reshape event by setting the viewport so that it takes up the
+// whole visible region, then sets the projection matrix to something reason-
+// able that maintains proper aspect ratio.
+void reshape(GLint w, GLint h) {
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluOrtho2D(disp_x_range_min, disp_x_range_max, disp_y_range_min, disp_y_range_max);
+}
+
+// Handles the keyboard event: the left and right arrows bend the elbow, the
+// up and down keys bend the shoulder.
+void special(int key, int, int) {
+    int timeout = 3000000;
+    //cout<<"Got key.."<<key<<endl;
+    while (timeout--){} //debouncing
+    switch(key){
+        case (GLUT_KEY_RIGHT):    
+                AddNode();
+                display();
+                glutPostRedisplay();
+                break;
+
+        case (GLUT_KEY_LEFT):    
+                FreeNode();
+                display();
+                glutPostRedisplay();
+                break;
+
+        default:
+                bioformMutation(&formObject);
+                drawBioFormWrapper(formObject, {0.0f,-0.3f});
+                display();
+                glutPostRedisplay();
+                break;
+    }
 }
 
 
@@ -132,7 +200,8 @@ void initGlutRoutine(int argc, char** argv){
     gluOrtho2D(disp_x_range_min, disp_x_range_max, disp_y_range_min, disp_y_range_max);
     glutInitWindowSize(window_width, window_height);    
     glutCreateWindow("Organic Developement Simulation");
-    //glutReshapeFunc(reshape);
+    glutReshapeFunc(reshape);
+    glutSpecialFunc(special);
     glutDisplayFunc(display);
 }
 
