@@ -16,8 +16,8 @@ typedef struct {
     GLfloat step_down;
 }geneParams;
 
-static geneParams  gene_trunkLen      = {  "TrunkLen",       0.25f,      0.01f,      0.06f,         0.001f,       0.0007f  };
-static geneParams  gene_branchLen     = {  "BranchLen",      0.25f,      0.01f,      0.06f,         0.001f,       0.0007f  };
+static geneParams  gene_trunkLen      = {  "TrunkLen",       0.25f,      0.01f,      0.04f,         0.001f,       0.0007f  };
+static geneParams  gene_branchLen     = {  "BranchLen",      0.25f,      0.01f,      0.04f,         0.001f,       0.0007f  };
 static geneParams  gene_branchLenFact = {  "BranchLenFact",   1.0f,       0.5f,       1.5f,         0.002f,       0.0015f  };
 static geneParams  gene_angleBranches = {  "angleBranches",   Pi/4,    0.05*Pi,    0.235*Pi,     Pi/240.0f,     Pi/240.0f  };
 static geneParams  gene_angleFactor   = {  "angleFactor",     1.0f,       0.5f,       1.5f,         0.002f,       0.0018f  };
