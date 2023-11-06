@@ -12,12 +12,6 @@
 using namespace std;
 
 
-
-/************   BIOFORM   OBJECTS     ************************/
-/**           trunkLen  firstB  bLenFact     angle      angFact   angleTrunk   levels) */
-
-
-
 /*******       main()    ***************
  *       Program starts here.     
  ***************************************/

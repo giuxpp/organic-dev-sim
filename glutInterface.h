@@ -5,12 +5,13 @@
 
 
 /* Glut Configuration */
-#define window_width               600
-#define window_height              600
-#define disp_x_range_min          (-0.6)
-#define disp_x_range_max          ( 0.6)
-#define disp_y_range_min          (-0.8)
-#define disp_y_range_max          ( 0.8)
+#define window_width               700
+#define window_height              700
+#define disp_x_range_min          (-0.4f )
+#define disp_x_range_max          ( 0.4f )
+#define disp_y_range_min          (-0.4f )
+#define disp_y_range_max          ( 0.4f )
+#define figure_yaxis_offset       (-0.18f)
 
 typedef struct {
     GLfloat x;

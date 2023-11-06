@@ -78,11 +78,11 @@ static void drawLine(float x0, float y0, float x1, float y1, gxp_color _color, u
  *   Ths functions receives a bioform object and starts
  *   to draw its generated figure.
  ******************************0.05f ******************************/
-void drawBioFormWrapper(bioformClass bioform, point pnt){
+void drawBioFormWrapper(bioformClass * bioform, point pnt){
     drawBioForms(pnt.x, pnt.y, 
-                bioform.trunkLen, bioform.branchLen, bioform.branchLenFact,    
-                bioform.angleBranches, bioform.angleFactor, bioform.angleTrunk,  
-                bioform.levels); 
+                bioform->trunkLen, bioform->branchLen, bioform->branchLenFact,    
+                bioform->angleBranches, bioform->angleFactor, bioform->angleTrunk,  
+                bioform->levels); 
 }
 
 
@@ -145,7 +145,7 @@ void EnterGlutLoop(void){
  ***************************************/
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);         
-        drawBioFormWrapper(formObject, {0.0f,-0.3f});
+        drawBioFormWrapper(treePointer->bioformPointer, {0.0f, figure_yaxis_offset});
         glutSwapBuffers();    
     glFlush(); 
 }
@@ -179,10 +179,6 @@ void special(int key, int, int) {
                 break;
 
         default:
-                bioformMutation(&formObject);
-                drawBioFormWrapper(formObject, {0.0f,-0.3f});
-                display();
-                glutPostRedisplay();
                 break;
     }
 }
